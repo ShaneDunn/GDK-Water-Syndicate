@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <title>GDK Meter Data File Upload</title>
+    <style>
+        body {
+            background-color: #e0f2f1;
+        }
+        
+        form p,
+        form label {
+            font-size: 120%;
+        }
+        
+        .signature {
+            border: 2px dashed #ccc;
+            background-color: #fafafa;
+            height: 150px;
+            margin-bottom: 20px
+        }
+        
+        .ctrlqHeaderMast {
+            height: 278px;
+            background: #009688;
+        }
+        
+        .ctrlqFormContent {
+            color: rgba(0, 0, 0, .87);
+            padding: 20px 35px
+        }
+        
+        .ctrlqFormContentWrapper {
+            display: -webkit-box;
+            display: -moz-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-orient: vertical;
+            box-orient: vertical;
+            -webkit-flex-direction: column;
+            flex-direction: column
+        }
+        
+        .ctrlqAccent {
+            background-color: #a7ffeb;
+            height: 8px;
+        }
+        
+        .ctrlqCenteredContent {
+            margin: auto;
+            width: 600px;
+        }
+        
+        .ctrlqFormCard {
+            background-color: #fff;
+            margin-bottom: 48px;
+            -webkit-box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.37);
+            word-wrap: break-word
+        }
+        
+        .ctrlqFormCard:first-of-type {
+            margin-top: -100px
+        }
+        
+        .ctrlqHeaderTitle {
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            font-size: 34px;
+            line-height: 135%;
+            max-width: 100%;
+            min-width: 0%;
+            margin-bottom: 22px
+        }
+        
+        @media (max-width: 660px) {
+            .ctrlqHeaderMast {
+                height: 122px;
+            }
+            .ctrlqFormCard:first-of-type {
+                margin-top: -50px;
+            }
+            .ctrlqCenteredContent {
+                width: 90%;
+            }
+        }
+        
+        div.error {
+            position: relative;
+            top: -1rem;
+            left: 0rem;
+            font-size: 0.9rem;
+            color: #FF4081;
+            -webkit-transform: translateY(0%);
+            -ms-transform: translateY(0%);
+            -o-transform: translateY(0%);
+            transform: translateY(0%);
+        }
+        
+        div#recaptcha_error,
+        div#signature_error {
+            position: relative;
+            top: .5rem;
+            left: 0rem;
+            font-size: 0.9rem;
+            color: #FF4081;
+            -webkit-transform: translateY(0%);
+            -ms-transform: translateY(0%);
+            -o-transform: translateY(0%);
+            transform: translateY(0%);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ctrlqFormContentWrapper">
+        <div class="ctrlqHeaderMast"></div>
+        <div class="ctrlqCenteredContent">
+            <div class="ctrlqFormCard">
+                <div class="ctrlqAccent"></div>
+                <div class="ctrlqFormContent">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <h4>GDK Meter Data File Upload</h4>
+                            <p>
+                                <p><span class="ctrlq-description">This form allows the user to upload the latest file downloaded of the Water meter used by the GDK Syndicate</span></p>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="file-field input-field col s12">
+                            <p>File Upload</p>
+                            <div>
+                                <div class="btn"><span onclick="fileUpload('ctrlq40222')">Browse</span></div>
+                                <div class="file-path-wrapper">
+                                    <input class="file-path validate" name="File Upload" type="text" id="ctrlq40222" placeholder="Select a file from your computer" data-error="err40222" required>
+                                </div>
+                                <div class="input-field">
+                                    <div id="err40222"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col m6 s12">
+                            <p>
+                                <button onclick="submitForm();return false;" class="waves-effect waves-light btn-large"><i class="material-icons right">backup</i>Submit</button>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <h4> HTML Embed Code </h4>
+                            <p>Please <a href="https://gum.co/GA14?wanted=true" target="_blank">buy a license</a> to use this code in your web forms.</p>
+                            <input onfocus="this.select();" onmouseup="return false;" type="text" value="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                            <p class="center-align"><a class="gumroad-button" onclick="$('a.gumroad-button').click();return false" href="https://gum.co/GA14?wanted=true" target="_blank" data-gumroad-single-product="true">Buy License</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed-action-btn horizontal" style="bottom: 45px; right: 24px;">
+        <a class="btn-floating btn-large red">
+            <i class="large material-icons">menu</i>
+        </a>
+        <ul>
+            <li><a class="btn-floating red" href="https://gum.co/GA14" target="_blank" title="Buy License - File Upload Form"><i class="material-icons">monetization_on</i></a></li>
+            <li><a class="btn-floating blue" href="https://youtu.be/C_YBBupebvE" target="_blank" title="Video Tutorial"><i class="material-icons">video_library</i></a></li>
+            <li><a class="btn-floating green" href="http://www.labnol.org/internet/file-upload-google-forms/29170/" target="_blank" title="How to Create File Upload Forms"><i class="material-icons">help</i></a></li>
+        </ul>
+    </div>
+
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
+<-- <script src="https://gumroad.com/js/gumroad.js"></script> -->
+
+<script>
+    UserVoice = window.UserVoice || [];
+    (function() {
+        var uv = document.createElement('script');
+        uv.type = 'text/javascript';
+        uv.async = true;
+        uv.src = '//widget.uservoice.com/WgTPAq6J1u0Fg5nXLMPTA.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(uv, s)
+    })();
+
+    UserVoice.push(['set', {
+        target: false,
+        post_suggestion_enabled: false,
+        permalinks_enabled: false,
+        smartvote_enabled: false,
+        screenshot_enabled: true,
+        accent_color: '#009688',
+        trigger_color: 'white',
+        trigger_background_color: '#009688',
+    }]);
+
+    UserVoice.push(['addTrigger', {
+        mode: 'contact',
+        trigger_position: 'bottom-left',
+        position: 'bottom-left'
+    }]);
+    UserVoice.push(['autoprompt', {}]);
+
+    UserVoice.push(['identify', {
+        name: 'Google Forms Uploads 8247',
+        email: "dunn.shane@gmail.com"
+    }]);
+</script>
+
+<script>
+    function submitForm() {
+        alert("Submit is disabled in form preview");
+        return false;
+    }
+
+    $(document).ready(function() {
+
+        $('select').material_select();
+
+        $('.datepicker').pickadate({
+            selectMonths: true,
+            selectYears: 50
+        });
+
+    });
+</script>
+
+</html>
