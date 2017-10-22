@@ -1,7 +1,7 @@
 function createDocFromSheet2(){
   var templateDocID = "13Wsgk7jmjXtjfyNorlX_OlBJLZoy3u8PuRarozETwOo"; // get template file id - Water Delivery Advice
   var FOLDER_NAME = "GDK"; // folder name of where to put completed reports
-  var FOLDER_ID = "0B6NHem9C-Di5XzlfVGRzRzVtbU0"; // folder ID of where to put completed reports
+  var FOLDER_ID = "0B6NHem9C-Di5XzlfVGRzRzVtbU0"; // folder ID of where to put completed reports  // https://drive.google.com/drive/folders/0B6NHem9C-Di5XzlfVGRzRzVtbU0?usp=sharing
   var WATER_DATA = "Order Workbench"; // name of sheet with water advice data
   var DOC_PREFIX = "Water Delivery Advice - "; // prefix for name of document to be loaded with water advice data
   var DUMMY_PARA = "Remove"; // Text denoting a dummy or unwanted paragraph

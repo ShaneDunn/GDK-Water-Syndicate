@@ -47,12 +47,12 @@ function test () {
   Logger.log(formattedDate);
   formattedDate = Utilities.formatDate(new Date(), "GMT", "dd/MM/yyyy hh:mm a");
   Logger.log(formattedDate);
-  var row = data[3];
-  Logger.log(row[19]);
+  var row = data[0];
+  Logger.log('Row 19: ' + row[19]);
   var aFstring = Utilities.formatString('%11.1f', row[19]);
   Logger.log(aFstring);
   var newBody = "xxxxxx <<qty_used>> xxxxxxx";
-  newBody.replaceText("<<qty_used>>", Utilities.formatString('%11.1f', row[19]));
+  newBody = newBody.replace('<<qty_used>>', Utilities.formatString('%11.1f', row[19]).trim());
   Logger.log(newBody);
   
   
