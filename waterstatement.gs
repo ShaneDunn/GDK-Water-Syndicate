@@ -2,7 +2,7 @@ function createDocFromSheet3(){
   var templateDocID = "10OlSE9c8__vLaqPydUnZQbSqNvQmxvogttx-wsWiVsE"; // get template file id - Water Statement
   var FOLDER_NAME = "GDK"; // folder name of where to put completed reports
   var FOLDER_ID = "0B6NHem9C-Di5XzlfVGRzRzVtbU0"; // folder ID of where to put completed reports
-  var WATER_DATA = "Meter Readings"; // name of sheet with water meter readings
+  var WATER_DATA = "order_detail"; // name of sheet with water meter readings
   var DOC_PREFIX = "Water Statement - "; // prefix for name of document to be loaded with water advice data
   var DUMMY_PARA = "Remove"; // Text denoting a dummy or unwanted paragraph
   var WS_TABLE = "Watering Schedule";  // Text as a place mark for the Water Scheduling table
@@ -14,8 +14,8 @@ function createDocFromSheet3(){
   var tz = SpreadsheetApp.getActive().getSpreadsheetTimeZone();
   var sheet = ss.getSheetByName(WATER_DATA);
   var data = sheet.getRange(START_ROW, START_COL, sheet.getLastRow()-1, sheet.getLastColumn()).getValues();
-  var sheet = ss.getSheetByName("Data");
-  var data2 = sheet.getRange(2, 1, 13, 13).getValues();
+  var sheet = ss.getSheetByName("data");
+  var data2 = sheet.getRange(3, 1, 16, 14).getValues();
   
   // create new document
   var adviceNbr = Utilities.formatDate(new Date(), tz, "yyyy/MM/dd"); // get watering number and date
@@ -40,15 +40,15 @@ function createDocFromSheet3(){
       var pgBrk = body.appendPageBreak();
     }
     // Format dates - check if a date object or a excel/calc decimal date number
-    if (data[i][9] instanceof Date) {
-      var temp = data[i][9];
+    if (data[i][10] instanceof Date) {
+      var temp = data[i][10];
     } else {
       var temp = ExcelDateToJSDate(data[i][10]);
     }
     var start_date = Utilities.formatDate(temp, tz, "EEEE dd/MM/yyyy hh:mm a");
 
-    if (data[i][10] instanceof Date) {
-      var temp = data[i][10];
+    if (data[i][11] instanceof Date) {
+      var temp = data[i][11];
     } else {
       var temp = ExcelDateToJSDate(data[i][11]);
     }
@@ -57,11 +57,17 @@ function createDocFromSheet3(){
     // load template and replace tokens
     var newBody = bodyCopy.copy();
     newBody.replaceText("<<User>>", data2[i][2]);
-    newBody.replaceText("<<Address>>", data2[i][1]);
-    newBody.replaceText("<<watering_no>>", "29/04/2015");
-    newBody.replaceText("<<Allocation>>", Utilities.formatString('%11.1f', data2[i][10]));
-    newBody.replaceText("<<UTD>>", Utilities.formatString('%11.1f', data2[i][11]));
-    newBody.replaceText("<<Remain>>", Utilities.formatString('%11.1f', data2[i][12]));
+    newBody.replaceText("<<Address>>", data2[i][3]);
+    newBody.replaceText("<<watering_no>>", '13/04/2018');
+    var temp1 = data2[i][11];
+    var temp2 = Utilities.formatString('%11.1f', temp1);
+    if (!data2[i][11]) {
+      newBody.replaceText("<<Allocation>>", "");
+    } else {
+      newBody.replaceText("<<Allocation>>", Utilities.formatString('%11.1f', data2[i][11]));
+    }
+    newBody.replaceText("<<UTD>>", Utilities.formatString('%11.1f', data2[i][12]).trim());
+    newBody.replaceText("<<Remain>>", Utilities.formatString('%11.1f', data2[i][13]).trim());
     // append template to new document
     for (var j = 0; j < newBody.getNumChildren(); j++) {
       var element = newBody.getChild(j).copy();
@@ -136,50 +142,60 @@ function addTableInDocument2(docBody, dataTable, tz, user_no) {
   td.setAttributes(headerStyle);
   table.setBorderColor("#cccccc");
   table.setColumnWidth(0, 65); //WIDTH:111
-  table.setColumnWidth(1, 140); //WIDTH:70
-  table.setColumnWidth(2, 140); //WIDTH:159
-  table.setColumnWidth(3, 40); //WIDTH:159
-  table.setColumnWidth(4, 40); //WIDTH:159
-  table.setColumnWidth(5, 40); //WIDTH:159
+  table.setColumnWidth(1, 135); //WIDTH:70
+  table.setColumnWidth(2, 135); //WIDTH:159
+  table.setColumnWidth(3, 45); //WIDTH:159
+  table.setColumnWidth(4, 45); //WIDTH:159
+  table.setColumnWidth(5, 45); //WIDTH:159
   table.setAttributes(tstyle);
 
   // Load schedule
   for (var i in dataTable){
-    var wused = Number(dataTable[i][12]);
+    var wused = Number(dataTable[i][16]);
     if (isNaN(wused)) {
         var dmp = false;
     } else {
         dmp = (wused > 0) ? true : false;
     }
-    if(dataTable[i][2] == user_no && dmp) {
+    if(dataTable[i][0] == 5 && dataTable[i][2] == user_no && dmp) {
       var dRow = dataTable[i];
       var tr = table.appendTableRow();
-      var td = tr.appendTableCell(dRow[0]);
+      var td = tr.appendTableCell(dRow[1]);
       td.setAttributes(cellStyle);
       //Apply the para style to each paragraph in cell
       var paraInCell = td.getChild(0).asParagraph();
       paraInCell.setAttributes(paraStyle);
-      var td = tr.appendTableCell(Utilities.formatDate(ExcelDateToJSDate(dRow[5]), tz, "dd/MM/yyyy hh:mm a"));
+      if (dRow[10] instanceof Date) {
+        var temp = dRow[10];
+      } else {
+        var temp = ExcelDateToJSDate(dRow[10]);
+      }
+      var td = tr.appendTableCell(Utilities.formatDate(temp, tz, "dd/MM/yyyy hh:mm a"));
       td.setAttributes(cellStyle);
       //Apply the para style to each paragraph in cell
       var paraInCell = td.getChild(0).asParagraph();
       paraInCell.setAttributes(paraStyle);
-      var td = tr.appendTableCell(Utilities.formatDate(ExcelDateToJSDate(dRow[7]), tz, "dd/MM/yyyy hh:mm a"));
+      if (dRow[11] instanceof Date) {
+        var temp = dRow[11];
+      } else {
+        var temp = ExcelDateToJSDate(dRow[11]);
+      }
+      var td = tr.appendTableCell(Utilities.formatDate(temp, tz, "dd/MM/yyyy hh:mm a"));
       td.setAttributes(cellStyle);
       //Apply the para style to each paragraph in cell
       var paraInCell = td.getChild(0).asParagraph();
       paraInCell.setAttributes(paraStyle);
-      var td = tr.appendTableCell(Utilities.formatString('%11.1f', dRow[10]));
+      var td = tr.appendTableCell(Utilities.formatString('%11.1f', dRow[14]).trim());
       td.setAttributes(cellStyle);
       //Apply the para style to each paragraph in cell
       var paraInCell = td.getChild(0).asParagraph();
       paraInCell.setAttributes(paraStyle);
-      var td = tr.appendTableCell(Utilities.formatString('%11.1f', dRow[11]));
+      var td = tr.appendTableCell(Utilities.formatString('%11.1f', dRow[15]).trim());
       td.setAttributes(cellStyle);
       //Apply the para style to each paragraph in cell
       var paraInCell = td.getChild(0).asParagraph();
       paraInCell.setAttributes(paraStyle);
-      var td = tr.appendTableCell(Utilities.formatString('%11.1f', dRow[12]));
+      var td = tr.appendTableCell(Utilities.formatString('%11.1f', dRow[16]).trim());
       td.setAttributes(cellStyle);
       //Apply the para style to each paragraph in cell
       var paraInCell = td.getChild(0).asParagraph();

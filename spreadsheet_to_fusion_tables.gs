@@ -74,4 +74,40 @@ function onOpen() {
     }];
     ss.addMenu("Sync Spreadsheet To Fusion Table", menuEntries);
 };
+
+/*
+  // clear everything in the sheet
+  ddSheet.clearContents().clearFormats();
+  edSheet.clearContents().clearFormats();
+  var nccHeader = [['Season','Watering No.','User','Name','Planned Hours','Status','Projected Usage at Std Rate','Requested Rate','Projected Usage','Order','Start Date Time','End Date Time','Manual Flow Rate Start','Manual Flow Rate End','Manual Meter Start','Manual Meter End','Used (Calc)','Meter Start','Meter End','Used (Query Sum)','Used (Calc)','Check Diff']];
+  var nccNewHeader = [['Timestamp', 'Username', 'Sales Rep. Code', 'Date', 'Outlet Name', 'Comments', 'Account Opened', 'Buy Through', 'Notes']];
+  edSheet.getRange(
+    1,               /* first row    *//*
+    1,               /* first column *//*
+    1,               /* rows    *//*
+    nccNewHeader[0].length /* columns *//*).setFontWeight('bold').setValues(nccNewHeader); // Set the font weight for the given range (“normal” or “bold”).
+  // Logger.log(lData);
+  ddSheet.getRange(
+    1,               /* first row    *//*
+    1,               /* first column *//*
+    1,               /* rows    *//*
+    nccNewHeader[0].length /* columns *//*).setFontWeight('bold').setValues(nccNewHeader); // Set the font weight for the given range (“normal” or “bold”).
+
+  // set the values in the sheet (as efficiently as we know how)
+  // Logger.log(eData);
+  edSheet.getRange(
+    2,              /* first row    *//*
+    3,              /* first column *//*
+    eData.length,   /* rows    *//*
+    eData[0].length /* columns *//*).setNumberFormat('@STRING@').setValues(eData);
+  // Logger.log(lData);
+  if (lData.length) {
+  ddSheet.getRange(
+    2,              /* first row    *//*
+    3,              /* first column *//*
+    lData.length,   /* rows    *//*
+    lData[0].length /* columns *//*).setNumberFormat('@STRING@').setValues(lData);
+  }
+
+
 */
