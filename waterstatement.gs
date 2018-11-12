@@ -3,9 +3,9 @@ function createDocFromSheet3(){
   var FOLDER_NAME = "GDK"; // folder name of where to put completed reports
   var FOLDER_ID = "0B6NHem9C-Di5XzlfVGRzRzVtbU0"; // folder ID of where to put completed reports
   var WATER_DATA = "order_detail"; // name of sheet with water meter readings
-  var DOC_PREFIX = "Water Statement - "; // prefix for name of document to be loaded with water advice data
+  var DOC_PREFIX = "2018/19 Water Statement - "; // prefix for name of document to be loaded with water advice data
   var DUMMY_PARA = "Remove"; // Text denoting a dummy or unwanted paragraph
-  var WS_TABLE = "Watering Schedule";  // Text as a place mark for the Water Scheduling table
+  var WS_TABLE = "Watering Record";  // Text as a place mark for the Watering Record table
   var START_ROW = 3; // The row on which the data in the spreadsheet starts
   var START_COL = 1; // The column on which the data in the spreadsheet starts
   
@@ -16,6 +16,12 @@ function createDocFromSheet3(){
   var data = sheet.getRange(START_ROW, START_COL, sheet.getLastRow()-1, sheet.getLastColumn()).getValues();
   var sheet = ss.getSheetByName("data");
   var data2 = sheet.getRange(3, 1, 16, 14).getValues();
+  var season = sheet.getRange(8, 18, 1, 1).getValues();
+  var sheet = ss.getSheetByName("charges");
+  var data3 = sheet.getRange(4, 1, 16, 24).getValues();
+  var var_charge = sheet.getRange(9, 46, 1, 1).getValues();
+  var levy = sheet.getRange(9, 74, 1, 1).getValues();
+  var tot_fixed = sheet.getRange(9, 39, 1, 1).getValues();
   
   // create new document
   var adviceNbr = Utilities.formatDate(new Date(), tz, "yyyy/MM/dd"); // get watering number and date
@@ -39,35 +45,71 @@ function createDocFromSheet3(){
     if( i > 0) {
       var pgBrk = body.appendPageBreak();
     }
-    // Format dates - check if a date object or a excel/calc decimal date number
-    if (data[i][10] instanceof Date) {
-      var temp = data[i][10];
-    } else {
-      var temp = ExcelDateToJSDate(data[i][10]);
-    }
-    var start_date = Utilities.formatDate(temp, tz, "EEEE dd/MM/yyyy hh:mm a");
-
-    if (data[i][11] instanceof Date) {
-      var temp = data[i][11];
-    } else {
-      var temp = ExcelDateToJSDate(data[i][11]);
-    }
-    var end_date = Utilities.formatDate(temp, tz, "EEEE dd/MM/yyyy hh:mm a");
     var addTable = true;
     // load template and replace tokens
     var newBody = bodyCopy.copy();
     newBody.replaceText("<<User>>", data2[i][2]);
     newBody.replaceText("<<Address>>", data2[i][3]);
-    newBody.replaceText("<<watering_no>>", '13/04/2018');
+    newBody.replaceText("<<watering_no>>", adviceNbr);
+    newBody.replaceText("<<Season>>", season[0][0]);
     var temp1 = data2[i][11];
-    var temp2 = Utilities.formatString('%11.1f', temp1);
+    //var temp2 = Utilities.formatString('%11.1f', temp1);
     if (!data2[i][11]) {
       newBody.replaceText("<<Allocation>>", "");
     } else {
       newBody.replaceText("<<Allocation>>", Utilities.formatString('%11.1f', data2[i][11]));
     }
-    newBody.replaceText("<<UTD>>", Utilities.formatString('%11.1f', data2[i][12]).trim());
-    newBody.replaceText("<<Remain>>", Utilities.formatString('%11.1f', data2[i][13]).trim());
+    if (!data2[i][12]) {
+      newBody.replaceText("<<UTD>>", "");
+    } else {
+      newBody.replaceText("<<UTD>>", Utilities.formatString('%11.1f', data2[i][12]).trim());
+    }
+    if (!data2[i][13]) {
+      newBody.replaceText("<<Remain>>", "");
+    } else {
+      newBody.replaceText("<<Remain>>", Utilities.formatString('%11.1f', data2[i][13]).trim());
+    }
+    if (!data3[i][21]) {
+      newBody.replaceText("<<Past Due>>", "");
+    } else {
+      newBody.replaceText("<<Past Due>>", Utilities.formatString('$%.2f', data3[i][21]).trim());
+    }
+    if (!data3[i][22]) {
+      newBody.replaceText("<<Past Due Comment>>", "");
+    } else {
+      newBody.replaceText("<<Past Due Comment>>", data3[i][22]);
+    }
+    if (!data3[i][12]) {
+      newBody.replaceText("<<Fixed Charge>>", "");
+    } else {
+      newBody.replaceText("<<Fixed Charge>>", Utilities.formatString('$%.2f', data3[i][12]).trim());
+    }
+    if (!tot_fixed[0][0]) {
+      newBody.replaceText("<<Total Fixed>>", "");
+    } else {
+      newBody.replaceText("<<Total Fixed>>", Utilities.formatString('$%.2f', tot_fixed[0][0]).trim());
+    }
+    if (!levy[0][0]) {
+      newBody.replaceText("<<Levy>>", "");
+    } else {
+      newBody.replaceText("<<Levy>>", Utilities.formatString('$%.2f', levy[0][0]).trim());
+    }
+    if (!data3[i][13]) {
+      newBody.replaceText("<<Tot Var Charge>>", "");
+    } else {
+      newBody.replaceText("<<Tot Var Charge>>", Utilities.formatString('$%.2f', data3[i][13]).trim());
+    }
+    if (!data2[i][12]) {
+      newBody.replaceText("<<Ml>>", "");
+    } else {
+      newBody.replaceText("<<Ml>>", Utilities.formatString('%11.1f', data2[i][12]).trim());
+    }
+    if (!var_charge[0][0]) {
+      newBody.replaceText("<<Var Charge>>", "");
+    } else {
+      newBody.replaceText("<<Var Charge>>", Utilities.formatString('$%.2f', var_charge[0][0]).trim());
+    }
+    
     // append template to new document
     for (var j = 0; j < newBody.getNumChildren(); j++) {
       var element = newBody.getChild(j).copy();
@@ -151,13 +193,28 @@ function addTableInDocument2(docBody, dataTable, tz, user_no) {
 
   // Load schedule
   for (var i in dataTable){
+    // Format dates - check if a date object or a excel/calc decimal date number
+    if (dataTable[i][10] instanceof Date) {
+      var temp = dataTable[i][10];
+    } else {
+      var temp = ExcelDateToJSDate(dataTable[i][10]);
+    }
+    var start_date = Utilities.formatDate(temp, tz, "EEEE dd/MM/yyyy hh:mm a");
+
+    if (dataTable[i][11] instanceof Date) {
+      var temp = dataTable[i][11];
+    } else {
+      var temp = ExcelDateToJSDate(dataTable[i][11]);
+    }
+    var end_date = Utilities.formatDate(temp, tz, "EEEE dd/MM/yyyy hh:mm a");
+
     var wused = Number(dataTable[i][16]);
     if (isNaN(wused)) {
         var dmp = false;
     } else {
         dmp = (wused > 0) ? true : false;
     }
-    if(dataTable[i][0] == 5 && dataTable[i][2] == user_no && dmp) {
+    if(dataTable[i][0] == 6 && dataTable[i][2] == user_no && dmp) {
       var dRow = dataTable[i];
       var tr = table.appendTableRow();
       var td = tr.appendTableCell(dRow[1]);

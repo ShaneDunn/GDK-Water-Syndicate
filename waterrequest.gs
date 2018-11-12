@@ -52,7 +52,7 @@ function createDocFromSheet(){
       newBody.replaceText("<<Date>>", req_date);
       newBody.replaceText("<<Order_Date>>", due_date);
       newBody.replaceText("<<Note>>", note);
-      if (row[12]) {
+      if (row[13]) {
         newBody.replaceText("<<qty_used>>", Utilities.formatString('%11.1f', row[12]));
         newBody.replaceText("<<qty_remain>>", Utilities.formatString('%11.1f', row[13]));
       } else {
@@ -61,6 +61,12 @@ function createDocFromSheet(){
       }
       newBody.replaceText("<<Water_Order_Date>>", order_date);
       newBody.replaceText("<<Order_Start>>", start_date);
+      newBody.replaceText("<<fx_chrg>>", "N/A");
+      newBody.replaceText("<<wtr_chrg>>", "N/A");
+      var pnote = row[27];
+      if( pnote == "" ) pnote = DUMMY_PARA;
+      newBody.replaceText("<<Note_Personal>>", pnote);
+      
 
       for (var j = 0; j < newBody.getNumChildren(); j++) {
         var element = newBody.getChild(j).copy();
