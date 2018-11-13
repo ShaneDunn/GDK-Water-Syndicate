@@ -22,10 +22,12 @@ function createDocFromSheet3(){
   var var_charge = sheet.getRange(9, 46, 1, 1).getValues();
   var levy = sheet.getRange(9, 74, 1, 1).getValues();
   var tot_fixed = sheet.getRange(9, 39, 1, 1).getValues();
+  var water_no = Utilities.formatString('%11f', ss.getSheetByName("System").getRange(2, 8).getValue());
   
   // create new document
-  var adviceNbr = Utilities.formatDate(new Date(), tz, "yyyy/MM/dd"); // get watering number and date
-  var doc = DocumentApp.create(DOC_PREFIX+adviceNbr);
+  var adviceNbr = water_no + Utilities.formatDate(new Date(), tz, "dd/MM/yyyy") + " v01"; // get watering number and date
+  var doc_name = DOC_PREFIX + water_no + Utilities.formatDate(new Date(), tz, "yyyy/MM/dd");
+  var doc = DocumentApp.create(doc_name);
   var body = doc.getBody();
 
   // move file to right folder
@@ -87,7 +89,7 @@ function createDocFromSheet3(){
     if (!tot_fixed[0][0]) {
       newBody.replaceText("<<Total Fixed>>", "");
     } else {
-      newBody.replaceText("<<Total Fixed>>", Utilities.formatString('$%.2f', tot_fixed[0][0]).trim());
+      newBody.replaceText("<<Total Fixed>>", formatCurrency('$', tot_fixed[0][0]));
     }
     if (!levy[0][0]) {
       newBody.replaceText("<<Levy>>", "");
@@ -149,6 +151,7 @@ function addTableInDocument2(docBody, dataTable, tz, user_no) {
   headerStyle[DocumentApp.Attribute.BACKGROUND_COLOR] = '#d9d9d9';
   headerStyle[DocumentApp.Attribute.BOLD] = true;
   headerStyle[DocumentApp.Attribute.FONT_SIZE] = 10;
+  headerStyle[DocumentApp.Attribute.VERTICAL_ALIGNMENT] = DocumentApp.VerticalAlignment.BOTTOM;
   
   //Style for the cells other than header row
   var cellStyle = {};
@@ -259,4 +262,11 @@ function addTableInDocument2(docBody, dataTable, tz, user_no) {
       paraInCell.setAttributes(paraStyle);
     }
   }
+}
+
+function formatCurrency(symbol, amount) {
+  var aDigits = amount.toFixed(2).split(".");
+  aDigits[0] = aDigits[0].split("").reverse().join("")
+    .replace(/(\d{3})(?=\d)/g,"$1,").split("").reverse().join("");
+  return symbol + aDigits.join(".");
 }
