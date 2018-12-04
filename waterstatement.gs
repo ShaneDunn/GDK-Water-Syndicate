@@ -22,11 +22,11 @@ function createDocFromSheet3(){
   var var_charge = sheet.getRange(9, 46, 1, 1).getValues();
   var levy = sheet.getRange(9, 74, 1, 1).getValues();
   var tot_fixed = sheet.getRange(9, 39, 1, 1).getValues();
-  var water_no = Utilities.formatString('%11f', ss.getSheetByName("System").getRange(2, 8).getValue());
+  var water_no = Utilities.formatString('%02d', ss.getSheetByName("System").getRange(2, 8).getValue());
   
   // create new document
-  var adviceNbr = water_no + Utilities.formatDate(new Date(), tz, "dd/MM/yyyy") + " v01"; // get watering number and date
-  var doc_name = DOC_PREFIX + water_no + Utilities.formatDate(new Date(), tz, "yyyy/MM/dd");
+  var adviceNbr = water_no + " " + Utilities.formatDate(new Date(), tz, "dd/MM/yyyy") + " v01"; // get watering number and date
+  var doc_name = DOC_PREFIX + water_no + " " + Utilities.formatDate(new Date(), tz, "yyyy/MM/dd");
   var doc = DocumentApp.create(doc_name);
   var body = doc.getBody();
 
@@ -59,7 +59,7 @@ function createDocFromSheet3(){
     if (!data2[i][11]) {
       newBody.replaceText("<<Allocation>>", "");
     } else {
-      newBody.replaceText("<<Allocation>>", Utilities.formatString('%11.1f', data2[i][11]));
+      newBody.replaceText("<<Allocation>>", Utilities.formatString('%11.1f', data2[i][11]).trim());
     }
     if (!data2[i][12]) {
       newBody.replaceText("<<UTD>>", "");

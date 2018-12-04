@@ -6,7 +6,7 @@ function createDocFromSheet2(){
   var DOC_PREFIX = "Water Delivery Advice - "; // prefix for name of document to be loaded with water advice data
   var DUMMY_PARA = "Remove"; // Text denoting a dummy or unwanted paragraph
   var WS_TABLE = "Watering Schedule";  // Text as a place mark for the Water Scheduling table
-  var START_ROW = 2; // The row on which the data in the spreadsheet starts
+  var START_ROW = 4; // The row on which the data in the spreadsheet starts
   var START_COL = 22; // The column on which the data in the spreadsheet starts
 
   // get the data for the delivery advice letters
