@@ -3,6 +3,7 @@ function createDocFromSheet(){
   var FOLDER_NAME = "GDK"; // folder name of where to put completed reports
   var FOLDER_ID = "0B6NHem9C-Di5XzlfVGRzRzVtbU0"; // folder name of where to put completed reports
   var WATER_DATA = "Order Workbench"; // name of sheet with water advice data
+  var WATER_CHGS = "Charges"; // name of sheet with water charges data
   var DOC_PREFIX = "Water Allocation Request - "; // prefix for name of document to be loaded with water advice data
   var DUMMY_PARA = "Remove"; // Text denoting a dummy or unwanted paragraph
   var HEADER_START_ROW = 2; // The row on which the data in the spreadsheet starts
@@ -17,6 +18,8 @@ function createDocFromSheet(){
   var sheet = ss.getSheetByName(WATER_DATA);
   var header = sheet.getRange(HEADER_START_ROW, HEADER_START_COL, 1, sheet.getLastColumn()).getValues();
   var data = sheet.getRange(DATA_START_ROW, DATA_START_COL, sheet.getLastRow()-1, sheet.getLastColumn()).getValues();
+  var sheet = ss.getSheetByName(WATER_CHGS);
+  var data1 = sheet.getRange(DATA_START_ROW, DATA_START_COL, sheet.getLastRow()-1, sheet.getLastColumn()).getValues();
 
   // Load static variables for letter
   var season = header[0][0]; // get watering season
@@ -42,6 +45,7 @@ function createDocFromSheet(){
   // for each water user's entry fill in the template with the data 
   for (var i in data){
     var row = data[i];
+    var row1 = data1[i];
     if (row[0]) {
       if( i > 0) {
         var pgBrk = body.appendPageBreak();
@@ -61,8 +65,13 @@ function createDocFromSheet(){
       }
       newBody.replaceText("<<Water_Order_Date>>", order_date);
       newBody.replaceText("<<Order_Start>>", start_date);
-      newBody.replaceText("<<fx_chrg>>", "N/A");
-      newBody.replaceText("<<wtr_chrg>>", "N/A");
+      if (row1[12]) {
+        newBody.replaceText("<<fx_chrg>>", Utilities.formatString('$%.2f', row1[12]));
+        newBody.replaceText("<<wtr_chrg>>", Utilities.formatString('$%.2f', row1[13]));
+      } else {
+        newBody.replaceText("<<fx_chrg>>", " ");
+        newBody.replaceText("<<wtr_chrg>>", " ");
+      }
       var pnote = row[27];
       if( pnote == "" ) pnote = DUMMY_PARA;
       newBody.replaceText("<<Note_Personal>>", pnote);

@@ -3,7 +3,7 @@ function createDocFromSheet3(){
   var FOLDER_NAME = "GDK"; // folder name of where to put completed reports
   var FOLDER_ID = "0B6NHem9C-Di5XzlfVGRzRzVtbU0"; // folder ID of where to put completed reports
   var WATER_DATA = "order_detail"; // name of sheet with water meter readings
-  var DOC_PREFIX = "2018/19 Water Statement - "; // prefix for name of document to be loaded with water advice data
+  var DOC_PREFIX = " Water Statement - "; // prefix for name of document to be loaded with water advice data
   var DUMMY_PARA = "Remove"; // Text denoting a dummy or unwanted paragraph
   var WS_TABLE = "Watering Record";  // Text as a place mark for the Watering Record table
   var START_ROW = 3; // The row on which the data in the spreadsheet starts
@@ -14,19 +14,22 @@ function createDocFromSheet3(){
   var tz = SpreadsheetApp.getActive().getSpreadsheetTimeZone();
   var sheet = ss.getSheetByName(WATER_DATA);
   var data = sheet.getRange(START_ROW, START_COL, sheet.getLastRow()-1, sheet.getLastColumn()).getValues();
+  var hdata = ss.getSheetByName("Order Workbench").getRange(2, 1, 1, sheet.getLastColumn()).getValues();
   var sheet = ss.getSheetByName("data");
   var data2 = sheet.getRange(3, 1, 16, 14).getValues();
-  var season = sheet.getRange(8, 18, 1, 1).getValues();
   var sheet = ss.getSheetByName("charges");
   var data3 = sheet.getRange(4, 1, 16, 24).getValues();
   var var_charge = sheet.getRange(9, 46, 1, 1).getValues();
   var levy = sheet.getRange(9, 74, 1, 1).getValues();
   var tot_fixed = sheet.getRange(9, 39, 1, 1).getValues();
-  var water_no = Utilities.formatString('%02d', ss.getSheetByName("System").getRange(2, 8).getValue());
+  // var season = sheet.getRange(8, 18, 1, 1).getValues();
+  // var water_no = Utilities.formatString('%02d', ss.getSheetByName("System").getRange(2, 8).getValue());
+  var season = hdata[0][21]; // get watering season - System!B6 or 'Order Workbench'!V2
+  var water_no = Utilities.formatString('%02d', hdata[0][0]); // Get Watering No. - System!H2 or 'Order Workbench'!A2
   
   // create new document
   var adviceNbr = water_no + " " + Utilities.formatDate(new Date(), tz, "dd/MM/yyyy") + " v01"; // get watering number and date
-  var doc_name = DOC_PREFIX + water_no + " " + Utilities.formatDate(new Date(), tz, "yyyy/MM/dd");
+  var doc_name = season + DOC_PREFIX + adviceNbr;
   var doc = DocumentApp.create(doc_name);
   var body = doc.getBody();
 
@@ -245,6 +248,8 @@ function addTableInDocument2(docBody, dataTable, tz, user_no) {
       //Apply the para style to each paragraph in cell
       var paraInCell = td.getChild(0).asParagraph();
       paraInCell.setAttributes(paraStyle);
+      Logger.log(dRow[14]);
+      Logger.log(Utilities.formatString('%11.1f', dRow[14]));
       var td = tr.appendTableCell(Utilities.formatString('%11.1f', dRow[14]).trim());
       td.setAttributes(cellStyle);
       //Apply the para style to each paragraph in cell

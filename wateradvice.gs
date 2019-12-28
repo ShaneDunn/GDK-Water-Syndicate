@@ -3,7 +3,7 @@ function createDocFromSheet2(){
   var FOLDER_NAME = "GDK"; // folder name of where to put completed reports
   var FOLDER_ID = "0B6NHem9C-Di5XzlfVGRzRzVtbU0"; // folder ID of where to put completed reports  // https://drive.google.com/drive/folders/0B6NHem9C-Di5XzlfVGRzRzVtbU0?usp=sharing
   var WATER_DATA = "Order Workbench"; // name of sheet with water advice data
-  var DOC_PREFIX = "Water Delivery Advice - "; // prefix for name of document to be loaded with water advice data
+  var DOC_PREFIX = " Water Delivery Advice - "; // prefix for name of document to be loaded with water advice data
   var DUMMY_PARA = "Remove"; // Text denoting a dummy or unwanted paragraph
   var WS_TABLE = "Watering Schedule";  // Text as a place mark for the Water Scheduling table
   var START_ROW = 4; // The row on which the data in the spreadsheet starts
@@ -14,20 +14,16 @@ function createDocFromSheet2(){
   var tz = SpreadsheetApp.getActive().getSpreadsheetTimeZone();
   var sheet = ss.getSheetByName(WATER_DATA);
   var data = sheet.getRange(START_ROW, START_COL, sheet.getLastRow()-1, sheet.getLastColumn()).getValues();
+  var hdata = sheet.getRange(2, 1, 1, sheet.getLastColumn()).getValues();
 
   // create new document
-  var season = data[0][0]; // get watering season
-  var adviceNbr = data[0][1] + " - " + Utilities.formatDate(new Date(), tz, "yyyy/MM/dd"); // get watering number and date
-  var doc = DocumentApp.create(DOC_PREFIX+adviceNbr);
-  var body = doc.getBody();
+  var season = hdata[0][21]; // get watering season - System!B6 or 'Order Workbench'!V2
+  var water_no = Utilities.formatString('%02d', hdata[0][0]); // Get Watering No. - System!H2 or 'Order Workbench'!A2
+  var adviceNbr = water_no + " " + Utilities.formatDate(new Date(), tz, "dd/MM/yyyy") + " v02"; // get watering number and date
+  var doc_name = season + DOC_PREFIX + adviceNbr;
 
-  // move file to right folder
-  //var file = DocsList.getFileById(doc.getId());
-  //var folder = DocsList.getFolder(FOLDER_NAME);
-  //file.addToFolder(folder);
-  //file.removeFromFolder(DocsList.getRootFolder());
   var folder = DriveApp.getFolderById(FOLDER_ID);
-  var file = DriveApp.getFileById(templateDocID).makeCopy(DOC_PREFIX+adviceNbr, folder);
+  var file = DriveApp.getFileById(templateDocID).makeCopy(doc_name, folder);
   var docID = file.getId();
   var doc = DocumentApp.openById(docID);
   var body = doc.getBody();
@@ -63,10 +59,10 @@ function createDocFromSheet2(){
       var addTable = true;
       // load template and replace tokens
       var newBody = bodyCopy.copy();
-      newBody.replaceText("<<Season>>", data[0][0]);
+      newBody.replaceText("<<Season>>", season);
       newBody.replaceText("<<User>>", data[i][8]);
       newBody.replaceText("<<Address>>", data[i][27]);
-      newBody.replaceText("<<watering_no>>", data[0][1]);
+      newBody.replaceText("<<watering_no>>", water_no);
       newBody.replaceText("<<sDate>> <<sTime>> <<sPeriod>>",start_date + " [" + data[i][17]+"]");
       newBody.replaceText("<<eDate>> <<eTime>> <<ePeriod>>",end_date + " [" + data[i][18]+"]");
       newBody.replaceText("<<Hrs>>", data[i][24]);
@@ -80,11 +76,14 @@ function createDocFromSheet2(){
       newBody.replaceText("<<Remain>>", Utilities.formatString('%11.1f', data[i][20]));
       newBody.replaceText("<<eRemain>>", Utilities.formatString('%11.1f', data[i][22]));
       // append template to new document
+      
       for (var j = 0; j < newBody.getNumChildren(); j++) {
         var element = newBody.getChild(j).copy();
         var type = element.getType(); // need to handle different types para, table etc differently
         //Logger.log("Element type is "+type);
         if (type == DocumentApp.ElementType.PARAGRAPH ) {
+          body.appendParagraph(element);
+          /*
           if (element.asParagraph().getText() != DUMMY_PARA) {
             body.appendParagraph(element);
           }
@@ -92,14 +91,19 @@ function createDocFromSheet2(){
             addTableInDocument(doc, data, tz);
             addTable = false;
           }
+          */
         } else if (type == DocumentApp.ElementType.TABLE ) {
+          /*
           if ( addTable ) { body.appendTable(element); }
           else { addTable = true; }
+          */
+          body.appendTable(element);
         } else if( type == DocumentApp.ElementType.LIST_ITEM ) {
           body.appendListItem(element);
         } else
           throw new Error("Unknown element type: "+type);
       }
+      
       // remove first blank line / paragraph
       if( i == 0) {
         var para = body.getChild(0).removeFromParent();
@@ -150,8 +154,8 @@ function addTableInDocument(docBody, dataTable, tz) {
   table.setBorderColor("#cccccc");
   table.setColumnWidth(0, 65); //WIDTH:111
   table.setColumnWidth(1, 65); //WIDTH:70
-  table.setColumnWidth(2, 160); //WIDTH:159
-  table.setColumnWidth(3, 160); //WIDTH:159
+  table.setColumnWidth(2, 170); //WIDTH:159
+  table.setColumnWidth(3, 170); //WIDTH:159
   table.setAttributes(tstyle);
 
   // Load schedule
