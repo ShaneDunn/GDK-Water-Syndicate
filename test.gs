@@ -985,5 +985,322 @@ https://developers.google.com/apps-script/reference/document/body#setText(String
 
 
 
+
+
+http://www.andrewroberts.net/2016/01/google-apps-script-to-create-and-email-a-pdf/
+
+
+function getRowsData(sheet, range, columnHeadersRowIndex) {
+  columnHeadersRowIndex = columnHeadersRowIndex || range.getRowIndex() - 1;
+  var numColumns = range.getEndColumn() - range.getColumn() + 1;
+  var headersRange = sheet.getRange(columnHeadersRowIndex, range.getColumn(), 1, numColumns);
+  var headers = headersRange.getValues()[0];
+  return getObjects(range.getValues(), normalizeHeaders(headers));
+}
+
+
+function getObjects(data, keys) {
+  var objects = [];
+  for (var i = 0; i < data.length; ++i) {
+    var object = {};
+    var hasData = false;
+    for (var j = 0; j < data[i].length; ++j) {
+      var cellData = data[i][j];
+      if (isCellEmpty(cellData)) {
+        continue;
+      }
+      object[keys[j]] = cellData;
+      hasData = true;
+    }
+    if (hasData) {
+      objects.push(object);
+    }
+  }
+  return objects;
+}
+
+
+function normalizeHeaders(headers) {
+  var keys = [];
+  for (var i = 0; i < headers.length; ++i) {
+    var key = normalizeHeader(headers[i]);
+    if (key.length > 0) {
+      keys.push(key);
+    }
+  }
+  return keys;
+}
+
+function normalizeHeader(header) {
+  var key = '';
+  var upperCase = false;
+  for (var i = 0; i < header.length; ++i) {
+    var letter = header[i];
+    if (letter == ' ' && key.length > 0) {
+      upperCase = true;
+      continue;
+    }
+    if (!isAlnum(letter)) {
+      continue;
+    }
+    if (key.length == 0 && isDigit(letter)) {
+      continue; // first character must be a letter
+    }
+    if (upperCase) {
+      upperCase = false;
+      key += letter.toUpperCase();
+    } else {
+      key += letter.toLowerCase();
+    }
+  }
+  return key;
+}
+
+
+function isCellEmpty(cellData) {
+  return typeof(cellData) == 'string' && cellData == '';
+}
+
+
+function isAlnum(char) {
+  return char >= 'A' && char <= 'Z' ||
+    char >= 'a' && char <= 'z' ||
+    isDigit(char);
+}
+
+
+function isDigit(char) {
+  return char >= '0' && char <= '9';
+}
+
+
+function sendEmails() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var dataSheet = ss.getSheets()[0];
+  var dataRange = dataSheet.getRange(2, 1, dataSheet.getMaxRows() - 1, 4);
+
+  var templateSheet = ss.getSheets()[1];
+  var emailTemplate = templateSheet.getRange('A1').getValue();
+
+
+  var objects = getRowsData(dataSheet, dataRange);
+
+  // For every row object, create a personalized email from a template and send
+  // it to the appropriate person.
+  for (var i = 0; i < objects.length; ++i) {
+    // Get a row object
+    var rowData = objects[i];
+
+
+    var emailText = fillInTemplateFromObject(emailTemplate, rowData);
+    var emailSubject = 'Mail Merge Test';
+    var file = DriveApp.getFilesByName('2019_MA_BenefitsGuide.pdf')
+    MailApp.sendEmail(rowData.emailAddress, emailSubject, emailText );
+
+
+  }
+}
+
+function fillInTemplateFromObject(template, data) {
+  var email = template;
+  // Search for all the variables to be replaced, for instance ${"Column name"}
+  var templateVars = template.match(/\$\{\"[^\"]+\"\}/g);
+
+  // Replace variables from the template with the actual values from the data object.
+
+  for (var i = 0; i < templateVars.length; ++i) {
+
+    var variableData = data[normalizeHeader(templateVars[i])];
+    email = email.replace(templateVars[i], variableData || '');
+  }
+
+  return email;
+}
+
+
+
+//*
+  for (var i = 0; i < data.length; ++i) {
+    var row = data[i];
+    var emailAddress = row[0];  // First column
+    var message = row[1];       // Second column
+    var emailSent = row[2];     // Third column
+    if (emailSent != EMAIL_SENT) {  // Prevents sending duplicates
+      var subject = "Sending emails from a Spreadsheet";
+      var file = DriveApp.getFilesByName('test123.pdf')
+      MailApp.sendEmail(emailAddress, subject, message, {
+     attachments: [file.getAs(MimeType.PDF)],
+     name: 'Automatic Emailer Script'
+      MailApp.sendEmail(rowData.emailAddress, emailSubject, emailText);
+ });
+
+///**
+
+
+
+
+// Send an email with a file from Google Drive attached as a PDF.
+ var file = DriveApp.getFileById('1234567890abcdefghijklmnopqrstuvwxyz');
+ GmailApp.sendEmail('mike@example.com', 'Attachment example', 'Please see the attached file.', {
+     attachments: [file.getAs(MimeType.PDF)],
+     name: 'Automatic Emailer Script'
+ });
+
+
+// This constant is written in column C for rows for which an email
+// has been sent successfully.
+var EMAIL_SENT = "EMAIL_SENT";
+
+function sendEmails2() {
+  var sheet = SpreadsheetApp.getActiveSheet();
+  var startRow = 2;  // First row of data to process
+  var numRows = 1;   // Number of rows to process
+  // Fetch the range of cells A2:B3
+  var dataRange = sheet.getRange(startRow, 1, numRows, 2)
+  // Fetch values for each row in the Range.
+  var data = dataRange.getValues();
+  for (var i = 0; i < data.length; ++i) {
+    var row = data[i];
+    var emailAddress = row[0];  // First column
+    var message = row[1];       // Second column
+    var emailSent = row[2];     // Third column
+    if (emailSent != EMAIL_SENT) {  // Prevents sending duplicates
+      var subject = "Sending emails from a Spreadsheet";
+      var file = DriveApp.getFilesByName('test123.pdf')
+      if (file.hasNext()) {
+        MailApp.sendEmail(emailAddress,
+                          subject,
+                          message,
+                          { attachments: [file.getAs(MimeType.PDF)],
+                            name: 'Automatic Emailer Script'
+                          }
+                         );
+      }
+      sheet.getRange(startRow + i, 3).setValue(EMAIL_SENT);
+      // Make sure the cell is updated right away in case the script is interrupted
+      SpreadsheetApp.flush();
+    }
+  }
+}
+
+
+
+function doMerge() {
+  var selectedSpreadsheetId = UserProperties.getProperty("spreadsheetId");
+  var selectedTemplateId = UserProperties.getProperty("templateId");
+  Logger.log("Selected spreadsheet: " + selectedSpreadsheetId);
+  var sheet = SpreadsheetApp.openById(selectedSpreadsheetId);
+  Logger.log("Spreadsheet opened");
+  Logger.log("Opening template: " + selectedTemplateId);
+  var template = DocumentApp.openById(selectedTemplateId);
+  Logger.log("Template opened");
+  var templateFile = DocsList.getFileById(selectedTemplateId);
+  var templateDoc = DocumentApp.openById(templateFile.getId());
+  //var mergedFile = templateFile.makeCopy();
+  var mergedDoc = DocumentApp.create("Result of mail merge");
+  var bodyCopy = templateDoc.getActiveSection().copy();
+  Logger.log("Copy made");
+  var rows = sheet.getDataRange();
+  var numRows = rows.getNumRows();
+  var values = rows.getValues();
+  var fieldNames = values[0];
+
+  for (var i = 1; i < numRows; i++) {
+    var row = values[i];
+    Logger.log("Processing row " + i + " " + row);
+    var body = bodyCopy.copy();
+    for (var f = 0; f < fieldNames.length; f++) {
+      Logger.log("Processing field " + f + " " + fieldNames[f]);
+      Logger.log("Replacing [" + fieldNames[f] + "] with " + row[f]);
+      body.replaceText("\\[" + fieldNames[f] + "\\]", row[f]);
+    }
+    var numChildren = body.getNumChildren();
+    for (var c = 0; c < numChildren; c++) {
+      var child = body.getChild(c);
+      child = child.copy();
+      if (child.getType() == DocumentApp.ElementType.HORIZONTALRULE) {
+        mergedDoc.appendHorizontalRule(child);
+      } else if (child.getType() == DocumentApp.ElementType.INLINEIMAGE) {
+        mergedDoc.appendImage(child);
+      } else if (child.getType() == DocumentApp.ElementType.PARAGRAPH) {
+        mergedDoc.appendParagraph(child);
+      } else if (child.getType() == DocumentApp.ElementType.LISTITEM) {
+        mergedDoc.appendListItem(child);
+      } else if (child.getType() == DocumentApp.ElementType.TABLE) {
+        mergedDoc.appendTable(child);
+      } else {
+        Logger.log("Unknown element type: " + child);
+      }
+   }
+   Logger.log("Appending page break");
+   mergedDoc.appendPageBreak();
+   Logger.log("Result is now " + mergedDoc.getActiveSection().getText());
+  }
+}
+
+merge.gs
+
+/*  This is the main method that should be invoked. 
+ *  Copy and paste the ID of your template Doc in the first line of this method.
+ *
+ *  Make sure the first row of the data Sheet is column headers.
+ *
+ *  Reference the column headers in the template by enclosing the header in square brackets.
+ *  Example: "This is [header1] that corresponds to a value of [header2]."
+ **
+function doMerge() {
+  var selectedTemplateId = "1foobarfoobarfoobarfoobarfoobarfoobar";//Copy and paste the ID of the template document here (you can find this in the document's URL)
+  
+  var templateFile = DriveApp.getFileById(selectedTemplateId);
+  var mergedFile = templateFile.makeCopy();//make a copy of the template file to use for the merged File. Note: It is necessary to make a copy upfront, and do the rest of the content manipulation inside this single copied file, otherwise, if the destination file and the template file are separate, a Google bug will prevent copying of images from the template to the destination. See the description of the bug here: https://code.google.com/p/google-apps-script-issues/issues/detail?id=1612#c14
+  mergedFile.setName("filled_"+templateFile.getName());//give a custom name to the new file (otherwise it is called "copy of ...")
+  var mergedDoc = DocumentApp.openById(mergedFile.getId());
+  var bodyElement = mergedDoc.getBody();//the body of the merged document, which is at this point the same as the template doc.
+  var bodyCopy = bodyElement.copy();//make a copy of the body
+  
+  bodyElement.clear();//clear the body of the mergedDoc so that we can write the new data in it.
+  
+  var sheet = SpreadsheetApp.getActiveSheet();//current sheet
+
+  var rows = sheet.getDataRange();
+  var numRows = rows.getNumRows();
+  var values = rows.getValues();
+  var fieldNames = values[0];//First row of the sheet must be the the field names
+
+  for (var i = 1; i < numRows; i++) {//data values start from the second row of the sheet 
+    var row = values[i];
+    var body = bodyCopy.copy();
+    
+    for (var f = 0; f < fieldNames.length; f++) {
+      body.replaceText("\\[" + fieldNames[f] + "\\]", row[f]);//replace [fieldName] with the respective data value
+    }
+    
+    var numChildren = body.getNumChildren();//number of the contents in the template doc
+   
+    for (var c = 0; c < numChildren; c++) {//Go over all the content of the template doc, and replicate it for each row of the data.
+      var child = body.getChild(c);
+      child = child.copy();
+      if (child.getType() == DocumentApp.ElementType.HORIZONTALRULE) {
+        mergedDoc.appendHorizontalRule(child);
+      } else if (child.getType() == DocumentApp.ElementType.INLINEIMAGE) {
+        mergedDoc.appendImage(child.getBlob());
+      } else if (child.getType() == DocumentApp.ElementType.PARAGRAPH) {
+        mergedDoc.appendParagraph(child);
+      } else if (child.getType() == DocumentApp.ElementType.LISTITEM) {
+        mergedDoc.appendListItem(child);
+      } else if (child.getType() == DocumentApp.ElementType.TABLE) {
+        mergedDoc.appendTable(child);
+      } else {
+        Logger.log("Unknown element type: " + child);
+      }
+   }
+    
+   mergedDoc.appendPageBreak();//Appending page break. Each row will be merged into a new page.
+
+  }
+}
+
+
+
 */
 
