@@ -18,6 +18,7 @@ var REQUIRE_SAME_COLUMNS = true;
  * replaces all rows in the fusion table identified by TABLE_ID with the
  * current sheet's data, starting at FIRST_DATA_ROW.
  */
+/*
 function sync() {
     var tasks = FusionTables.Task.list(TABLE_ID);  
     // Only run if there are no outstanding deletions or schema changes.
@@ -34,6 +35,7 @@ function sync() {
         Logger.log('Skipping row replacement because of ' + tasks.totalItems + ' active background task(s)');
     }
 };
+*/
 
 /**
  * converts the spreadsheet values to a csv string.

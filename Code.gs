@@ -10,7 +10,6 @@ function onOpen(e) {
     .addItem('UpLoad Meter Data to Drive', 'openDialog')
     .addItem('Load Meter Data to Spreadsheet', 'doclistUI')
     .addItem('Load Meter Data to Spreadsheet - static', 'importGDKCSV')
-    .addItem('Update Fusion Table', 'sync')
     .addItem('Create Report', 'createCSVReport')
     .addSeparator()
     .addSubMenu(ui.createMenu('Print')

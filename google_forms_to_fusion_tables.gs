@@ -335,6 +335,7 @@ function runSqlWithRetry(sql) {
  * @param {string} sql The SQL to execute.
  * @return {Object} the Fusion Table response object if successful.
  */
+/*
 function runSql(sql) {
   try {
     return FusionTables.Query.sql(sql, { hdrs: false });
@@ -352,6 +353,7 @@ function runSql(sql) {
     }
   }
 }
+*/
 
 /**
  * Converts the spreadsheet contents to a dictionary, mapping rowid

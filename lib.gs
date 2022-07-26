@@ -22,6 +22,7 @@ function ExcelDateToJSDate(serial) {
    return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate(), hours, minutes, seconds);
 }
 
+/*
 function listTables() {
   var tables = FusionTables.Table.list();
   if (tables.items) {
@@ -34,11 +35,13 @@ function listTables() {
     Logger.log('No tables found.');
   }
 }
+*/
 
 function testQuery() {
   runQuery("1BefImsxG2oyb2q2QH04XnMz-x0Ajxli4Wa7SDzTu");
 }
 
+/*
 function runQuery(tableId) {
   var sql = "SELECT * FROM " + tableId + " WHERE Status IN ('start', 'stop')";
   var result = FusionTables.Query.sqlGet(sql, {hdrs: false});
@@ -59,4 +62,4 @@ function runQuery(tableId) {
     Logger.log('No rows returned.');
   }
 }
-
+*/
